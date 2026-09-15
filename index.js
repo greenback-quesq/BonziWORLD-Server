@@ -1,5 +1,20 @@
 var http = require("http");
 var fs = require("fs");
+var path = require("path");
+var mimeTypes = {
+  ".css": "text/css; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".html": "text/html; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".gif": "image/gif",
+  ".svg": "image/svg+xml",
+  ".ico": "image/x-icon",
+  ".wav": "audio/wav",
+  ".mp3": "audio/mpeg"
+};
 
 //Read settings
 var colors = fs.readFileSync("./config/colors.txt").toString().replace(/\r/,"").split("\n");
@@ -13,16 +28,19 @@ var userips = {}; //It's just for the alt limit
 var guidcounter = 0;
 var server = http.createServer((req, res) => {
     //HTTP SERVER (not getting express i won't use 99% of its functions for a simple project)
-    fname = "index.html";
-    if (fs.existsSync("./frontend/" + req.url) && fs.lstatSync("./frontend/" + req.url).isFile()) {
-        data = fs.readFileSync("./frontend/" + req.url);
-        fname = req.url;
-    } else {
-        data = fs.readFileSync("./frontend/index.html");
-    }
-    fname.endsWith(".js") ? res.writeHead(200, { "Content-Type": "text/javascript" }) : res.writeHead(200, {});
-    if(!req.url.includes("../")) res.write(data);
-    res.end();
+    var requestPath = new URL(req.url, "http://localhost").pathname;
+    var relativePath = requestPath.replace(/^\/+/, "");
+    var filePath = path.resolve("./frontend", relativePath || "index.html");
+    var frontendRoot = path.resolve("./frontend");
+    var isSafePath = filePath === frontendRoot || filePath.startsWith(frontendRoot + path.sep);
+    var servedPath = isSafePath && fs.existsSync(filePath) && fs.lstatSync(filePath).isFile()
+      ? filePath
+      : path.join(frontendRoot, "index.html");
+    var data = fs.readFileSync(servedPath);
+    var contentType = mimeTypes[path.extname(servedPath).toLowerCase()] || "application/octet-stream";
+
+    res.writeHead(200, { "Content-Type": contentType });
+    res.end(data);
 });
 
 //Socket.io Server
