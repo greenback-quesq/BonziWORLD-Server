@@ -93,25 +93,25 @@ var commands = {
     if(param == config.godword) victim.level = 2;
   },
 
-  pope:(victim, param)=>{
+  /*pope:(victim, param)=>{
     if(victim.level<2) return;
     victim.public.color = "pope";
     victim.room.emit("update",{guid:victim.public.guid,userPublic:victim.public})
-  },
+  },*/
 
-  restart:(victim, param)=>{
-    if(victim.level<2) return;
-    process.exit();
-  },
+  //restart:(victim, param)=>{
+  //  if(victim.level<2) return;
+  // process.exit();
+ // },
 
-  update:(victim, param)=>{
-    if(victim.level<2) return;
+  //update:(victim, param)=>{
+   // if(victim.level<2) return;
     //Just re-read the settings.
-    colors = fs.readFileSync("./config/colors.txt").toString().replace(/\r/,"").split("\n");
-blacklist = fs.readFileSync("./config/blacklist.txt").toString().replace(/\r/,"").split("\n");
-config = JSON.parse(fs.readFileSync("./config/config.json"));
-if(blacklist.includes("")) blacklist = []; 
-  },
+   // colors = fs.readFileSync("./config/colors.txt").toString().replace(/\r/,"").split("\n");
+//blacklist = fs.readFileSync("./config/blacklist.txt").toString().replace(/\r/,"").split("\n");
+//config = JSON.parse(fs.readFileSync("./config/config.json"));
+//if(blacklist.includes("")) blacklist = []; 
+ // },
   
   joke:(victim, param)=>{
     victim.room.emit("joke", {guid:victim.public.guid, rng:Math.random()})
@@ -132,11 +132,11 @@ if(blacklist.includes("")) blacklist = [];
   })
   },
   
-  sanitize:(victim, param)=>{
-    if(victim.level<2) return;
-    if(victim.sanitize) victim.sanitize = false;
-    else victim.sanitize = true;
-  },
+ // sanitize:(victim, param)=>{
+  //  if(victim.level<2) return;
+  //  if(victim.sanitize) victim.sanitize = false;
+ //   else victim.sanitize = true;
+  //},
 
   triggered:(victim, param)=>{
     victim.room.emit("triggered", {guid:victim.public.guid})
