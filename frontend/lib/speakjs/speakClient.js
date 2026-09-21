@@ -98,14 +98,87 @@
 			}
 		}
 		
+		function loadMp3Encoder() {
+			if (window.lamejs) return Promise.resolve(window.lamejs);
+			if (window.__speakMp3Loader) return window.__speakMp3Loader;
+			window.__speakMp3Loader = new Promise(function (resolve, reject) {
+				var script = document.createElement('script');
+				script.src = 'https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js';
+				script.onload = function () {
+					window.lamejs ? resolve(window.lamejs) : reject(new Error('lamejs did not load'));
+				};
+				script.onerror = reject;
+				document.head.appendChild(script);
+			});
+			return window.__speakMp3Loader;
+		}
+
+		function wavToMp3(wav, lamejs) {
+			var view = new DataView(wav.buffer, wav.byteOffset, wav.byteLength);
+			if (view.getUint32(0, false) !== 0x52494646 || view.getUint32(8, false) !== 0x57415645) {
+				throw new Error('speak.js generated an invalid WAV');
+			}
+			var channels = view.getUint16(22, true);
+			var sampleRate = view.getUint32(24, true);
+			var offset = 12;
+			var dataOffset = -1;
+			var dataLength = 0;
+			while (offset + 8 <= view.byteLength) {
+				var chunk = view.getUint32(offset, false);
+				var length = view.getUint32(offset + 4, true);
+				if (chunk === 0x64617461) {
+					dataOffset = offset + 8;
+					dataLength = Math.min(length, view.byteLength - dataOffset);
+					break;
+				}
+				offset += 8 + length + (length % 2);
+			}
+			if (dataOffset < 0) throw new Error('WAV data chunk is missing');
+
+			var encoder = new lamejs.Mp3Encoder(channels, sampleRate, 64);
+			var samplesPerFrame = 1152;
+			var mp3Data = [];
+			for (var position = 0; position < dataLength / 2; position += samplesPerFrame) {
+				var left = new Int16Array(samplesPerFrame);
+				var right = channels > 1 ? new Int16Array(samplesPerFrame) : left;
+				for (var i = 0; i < samplesPerFrame; i++) {
+					var samplePosition = position + i;
+					if (samplePosition * 2 >= dataLength) break;
+					left[i] = view.getInt16(dataOffset + samplePosition * 2, true);
+					if (channels > 1 && samplePosition * 4 + 2 < dataLength) {
+						right[i] = view.getInt16(dataOffset + samplePosition * 4 + 2, true);
+					}
+				}
+				var encoded = channels > 1 ? encoder.encodeBuffer(left, right) : encoder.encodeBuffer(left);
+				if (encoded.length) mp3Data.push(encoded);
+			}
+			var finalFrame = encoder.flush();
+			if (finalFrame.length) mp3Data.push(finalFrame);
+			return new Blob(mp3Data, { type: 'audio/mpeg' });
+		}
+
 		function handleWav(wav) {
 			var startTime = Date.now();
-			var buffer = new ArrayBuffer(wav.length);
-			new Uint8Array(buffer).set(wav);
-			// TODO: try playAudioDataAPI(data), and fallback if failed
-			playSound(buffer);
-			if (PROFILE) console.log('speak.js: wav processing took ' + (Date.now() - startTime).toFixed(2) + ' ms');
+			var wavBytes = new Uint8Array(wav);
+			loadMp3Encoder().then(function (lamejs) {
+				var mp3 = wavToMp3(wavBytes, lamejs);
+				return mp3.arrayBuffer();
+			}).then(function (buffer) {
+				playSound(buffer);
+				if (PROFILE) console.log('speak.js: MP3 processing took ' + (Date.now() - startTime).toFixed(2) + ' ms');
+			}).catch(function (error) {
+				console.warn('speak.js: MP3 compression unavailable; playing WAV', error);
+				var buffer = new ArrayBuffer(wavBytes.length);
+				buffer = wavBytes.buffer.slice(wavBytes.byteOffset, wavBytes.byteOffset + wavBytes.byteLength);
+				playSound(buffer);
+			});
 		}
+
+		speak.compressWavToMp3 = function (wav) {
+			return loadMp3Encoder().then(function (lamejs) {
+				return wavToMp3(new Uint8Array(wav), lamejs);
+			});
+		};
 		
 		if (args && args.noWorker) {
 			// Do everything right now. speakGenerator.js must have been loaded.
