@@ -822,23 +822,8 @@ var _createClass = (function () {
         { type: "anim", anim: "cool_fwd", ticks: 30 },
         {
             type: "text",
-            text: "I sexually identify as BonziBUDDY. Ever since I was a young gorilla I dreamed of invading desktops dropping hot sticky tootorals on disgusting PC users.",
-            say: "I sexually identify as BonziBUDDY. Ever since I was a young gorilla I dreamed of invading desktops dropping hot sticky tootorals on disgusting PC users.",
-        },
-        {
-            type: "text",
-            text: "People say to me that a person being a BonziBUDDY is impossible and that I’m a fucking virus but I don’t care, I’m beautiful.",
-            say: "People say to me that a person being a BonziBUDDY is impossible and that I'm a fucking virus but I dont care, I'm beautiful.",
-        },
-        {
-            type: "text",
-            text: "I’m having an IT intern install Internet Explorer 6, aquarium screensavers and PC Doctor 2016 on my body. From now on I want you guys to call me “Joel” and respect my right to meme from above and meme needlessly.",
-            say: "I'm having an IT intern install Internet Explorer 6, aquarium screensavers and PC Doctor 2016 on my body. From now on I want you guys to call me Joel and respect my right to meme from above and meme needlessly.",
-        },
-        {
-            type: "text",
-            text: "If you can’t accept me you’re a gorillaphobe and need to check your file permissions. Thank you for being so understanding.",
-            say: "If you cant accept me your a gorillaphobe and need to check your file permissions. Thank you for being so understanding.",
+            text: "I'd just like to interject for a moment.",
+            say: "I'd just like to interject for a moment.",
         },
         { type: "idle" },
     ]),BonziData.event_list_linux = [{
@@ -868,7 +853,7 @@ var _createClass = (function () {
                 (this.framerate = 1 / 15),
                 (this.spriteSheets = {}),
                 (this.prepSprites = function () {
-                    for (var a = ["black", "blue", "brown", "green", "purple", "red", "pink", "pope"], b = 0; b < a.length; b++) {
+                    for (var a = ["black", "blue", "brown", "green", "purple", "red", "pink", "kek", "khe", "pope"], b = 0; b < a.length; b++) {
                         var c = a[b],
                             d = { images: ["./img/bonzi/" + c + ".png"], frames: BonziData.sprite.frames, animations: BonziData.sprite.animations };
                         this.spriteSheets[c] = new createjs.SpriteSheet(d);
