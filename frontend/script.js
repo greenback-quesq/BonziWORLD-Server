@@ -92,6 +92,7 @@ function loadTest() {
         (window.loadTestInterval = rInterval(function () {
             try {
                 if (!loadDone.equals(loadNeeded)) throw "Not done loading.";
+                if (!socket.connected) throw "Waiting for server connection.";
                 login(), loadTestInterval.clear();
             } catch (a) {}
         }, 100));
@@ -167,15 +168,23 @@ function usersUpdate() {
     (usersKeys = Object.keys(usersPublic)), (usersAmt = usersKeys.length);
 }
 function sendInput() {
-    var a = $("#chat_message").val();
-    if (($("#chat_message").val(""), a.length > 0)) {
-        var b = youtubeParser(a);
-        if (b) return void socket.emit("command", { list: ["youtube", b] });
-        if ("/" == a.substring(1, 0)) {
-            var c = a.substring(1).split(" ");
-            socket.emit("command", { list: c });
-        } else socket.emit("talk", { text: a });
-    }
+  var a = $("#chat_message").val();
+  if (( $("#chat_message").val(""), a.length > 0)) {
+    var b = youtubeParser(a);
+    if (b) return void socket.emit("command", { list: ["youtube", b] });
+    if ("/" == a.substring(1, 0)) {
+      var c = a.substring(1).split(" ");
+      if (c[0] === "voice") {
+        var voice = (c[1] || "").toLowerCase();
+        if (voice === "espeak" || voice === "speakjs") {
+          window.bonziVoice = voice;
+          if (window.speechSynthesis) window.speechSynthesis.cancel();
+          return;
+        }
+      }
+      socket.emit("command", { list: c });
+    } else socket.emit("talk", { text: a });
+  }
 }
 function touchHandler(a) {
     var b = a.changedTouches,
@@ -460,16 +469,26 @@ var _createClass = (function () {
                         this.$dialogCont[c ? "html" : "text"](a)[e ? "addClass" : "removeClass"]("bubble_greentext").css("display", "block"),
                             this.stopSpeaking(),
                             (this.goingToSpeak = !0),
-                            speak.play(
-                                b,
-                                { pitch: this.userPublic.pitch, speed: this.userPublic.speed },
-                                function () {
-                                    d.clearDialog();
-                                },
-                                function (a) {
-                                    d.goingToSpeak || a.stop(), (d.voiceSource = a);
-                                }
-                            );
+                            (window.bonziVoice || "speakjs") === "espeak" && window.speechSynthesis
+                                ? (function () {
+                                      var utterance = new SpeechSynthesisUtterance(b);
+                                      utterance.rate = Math.max(0.1, (d.userPublic.speed || 175) / 175);
+                                      utterance.pitch = Math.max(0, Math.min(2, (d.userPublic.pitch || 50) / 50));
+                                      utterance.onend = function () { d.clearDialog(); };
+                                      utterance.onerror = function () { d.clearDialog(); };
+                                      d.voiceSource = { stop: function () { window.speechSynthesis.cancel(); } };
+                                      window.speechSynthesis.speak(utterance);
+                                  })()
+                                : speak.play(
+                                      b,
+                                      { pitch: this.userPublic.pitch, speed: this.userPublic.speed },
+                                      function () {
+                                          d.clearDialog();
+                                      },
+                                      function (a) {
+                                          d.goingToSpeak || a.stop(), (d.voiceSource = a);
+                                      }
+                                  );
                     },
                 },
                 {
@@ -803,8 +822,23 @@ var _createClass = (function () {
         { type: "anim", anim: "cool_fwd", ticks: 30 },
         {
             type: "text",
-            text: "GEMERALD",
-            say: "GEMERALD",
+            text: "I sexually identify as BonziBUDDY. Ever since I was a young gorilla I dreamed of invading desktops dropping hot sticky tootorals on disgusting PC users.",
+            say: "I sexually identify as BonziBUDDY. Ever since I was a young gorilla I dreamed of invading desktops dropping hot sticky tootorals on disgusting PC users.",
+        },
+        {
+            type: "text",
+            text: "People say to me that a person being a BonziBUDDY is impossible and that I’m a fucking virus but I don’t care, I’m beautiful.",
+            say: "People say to me that a person being a BonziBUDDY is impossible and that I'm a fucking virus but I dont care, I'm beautiful.",
+        },
+        {
+            type: "text",
+            text: "I’m having an IT intern install Internet Explorer 6, aquarium screensavers and PC Doctor 2016 on my body. From now on I want you guys to call me “Joel” and respect my right to meme from above and meme needlessly.",
+            say: "I'm having an IT intern install Internet Explorer 6, aquarium screensavers and PC Doctor 2016 on my body. From now on I want you guys to call me Joel and respect my right to meme from above and meme needlessly.",
+        },
+        {
+            type: "text",
+            text: "If you can’t accept me you’re a gorillaphobe and need to check your file permissions. Thank you for being so understanding.",
+            say: "If you cant accept me your a gorillaphobe and need to check your file permissions. Thank you for being so understanding.",
         },
         { type: "idle" },
     ]),BonziData.event_list_linux = [{
@@ -834,7 +868,7 @@ var _createClass = (function () {
                 (this.framerate = 1 / 15),
                 (this.spriteSheets = {}),
                 (this.prepSprites = function () {
-                    for (var a = ["black", "blue", "brown", "green", "purple", "red", "pink", "kek", "khe", "pope"], b = 0; b < a.length; b++) {
+                    for (var a = ["black", "blue", "brown", "green", "purple", "red", "pink", "pope"], b = 0; b < a.length; b++) {
                         var c = a[b],
                             d = { images: ["./img/bonzi/" + c + ".png"], frames: BonziData.sprite.frames, animations: BonziData.sprite.animations };
                         this.spriteSheets[c] = new createjs.SpriteSheet(d);
@@ -920,12 +954,19 @@ $(window).load(function () {
     $("#login_card").show(), $("#login_load").hide(), loadBonzis();
 });
 var undefined,
-    hostname = window.location.hostname,
-    socket = io("//" + hostname),
+    socket = io("https://bonziworld-hand.onrender.com", {
+  transports: ["polling"],
+  upgrade: false,
+  reconnection: true,
+  reconnectionAttempts: Infinity,
+  }),
     usersPublic = {},
     bonzis = {},
-    debug = !0;
-$(function () {
+  debug = !0;
+  socket.on("connect_error", function () {
+  $("#login_card").show(), $("#login_load").hide(), $("#login_error").text("Unable to connect to the BonziWorld server.").show();
+  });
+  $(function () {
     $("#login_go").click(loadTest),
         $("#login_room").val(window.location.hash.slice(1)),
         $("#login_name, #login_room").keypress(function (a) {
