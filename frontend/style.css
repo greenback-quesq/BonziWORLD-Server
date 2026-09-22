@@ -260,7 +260,7 @@ body.vaporwave #chat_send {
     background-position: 0 -56px; }
 
 #content {
-  background-color: #452066;
+  background-color: "#452066";
   background-image: url("../img/desktop/logo.png"), url("../img/desktop/bg.png");
   background-position: top left, center;
   background-repeat: no-repeat; }
