@@ -135,7 +135,7 @@ input[type="text"] {
 .bonzi > canvas, .bonzi_placeholder {
   position: absolute; }
 
-.bubble- {
+.bubble-content {
   padding: 12px;
   max-height: 175px;
   user-select: text;
@@ -160,7 +160,7 @@ input[type="text"] {
   width: 197px;
   position: absolute; }
   .bubble::after {
-    : '';
+    content: '';
     position: absolute; }
 
 .bubble-left {
@@ -214,7 +214,7 @@ input[type="text"] {
 .bubble_greentext {
   color: #789922; }
 
-body.vaporwave # {
+body.vaporwave #content {
   background-color: #008080;
   background-image: url("../img/desktop.vaporwave/logo.png"), url("../img/desktop.vaporwave/bg.png");
   background-position: top left, center;
@@ -260,7 +260,7 @@ body.vaporwave #chat_send {
     background-position: 0 -56px; }
 
 #content {
-  background-color: "#452066";
+  background-color: #6d33a0;
   background-image: url("../img/desktop/logo.png"), url("../img/desktop/bg.png");
   background-position: top left, center;
   background-repeat: no-repeat; }
