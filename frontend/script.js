@@ -873,15 +873,13 @@ var _createClass = (function () {
                 (this.resizeCanvas = function () {
                     var a = this.$canvas.width(),
                         b = this.$canvas.height();
-                    
-                                        var c = Math.max(1, Math.round(a * this.renderScale)),
+                    var c = Math.max(1, Math.round(a * this.renderScale)),
                         d = Math.max(1, Math.round(b * this.renderScale));
                     if (this.$canvas.attr("width") != c || this.$canvas.attr("height") != d) {
                         this.$canvas.attr({ width: c, height: d });
                         this.stage.updateViewport(c, d);
                     }
                     this.needsUpdate = !0;
-                    
                     for (var c = 0; c < usersAmt; c++) {
                         var d = usersKeys[c];
                         bonzis[d].move();
