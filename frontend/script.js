@@ -141,6 +141,10 @@ function setup() {
             var b = bonzis[a.guid];
             b.cancel(), b.asshole(a.target);
         }),
+                socket.on("pastule", function (a) {
+            var b = bonzis[a.guid];
+            b.cancel(), b.pastule(a.target);
+        }),
         socket.on("owo", function (a) {
             var b = bonzis[a.guid];
             b.cancel(), b.owo(a.target);
