@@ -852,6 +852,7 @@ var _createClass = (function () {
             return (
                 (this.framerate = 1 / 15),
                 (this.spriteSheets = {}),
+                (this.renderScale = Math.min(window.devicePixelRatio || 1, window.deviceMemory && window.deviceMemory <= 2 ? 1 : 1.5)),
                 (this.prepSprites = function () {
                     for (var a = ["black", "blue", "brown", "green", "purple", "red", "pink", "kek", "khe", "pope"], b = 0; b < a.length; b++) {
                         var c = a[b],
