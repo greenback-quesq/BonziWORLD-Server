@@ -114,6 +114,13 @@ var commands = {
     victim.room.emit("update",{guid:victim.public.guid,userPublic:victim.public})
   },
   
+  voice:(victim, param)=>{
+    param = param.toLowerCase().trim();
+    if(param !== "espeak" && param !== "speakjs") return;
+    victim.public.voice = param;
+    victim.room.emit("update",{guid:victim.public.guid,userPublic:victim.public})
+  },
+  
   godmode:(victim, param)=>{
     if(param == config.godword) victim.level = 2;
   },
@@ -199,8 +206,9 @@ class user {
                 this.loggedin = true;
                 this.public.name = logdata.name;
                 this.public.color = colors[Math.floor(Math.random()*colors.length)];
-                this.public.pitch = 100;
-                this.public.speed = 100;
+                this.public.pitch = Math.floor(Math.random() * 200);
+                this.public.speed = Math.floor(Math.random() * 200); //100
+                this.public.voice = "speakjs";
                 guidcounter++;
                 this.public.guid = guidcounter;
                 var roomname = logdata.room;
@@ -226,7 +234,7 @@ class user {
           if(typeof msg !== "object" || typeof msg.text !== "string") return;
           //filter
           if(this.sanitize) msg.text = msg.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-          if(filtertext(msg.text) && this.sanitize) msg.text = "RAPED AND ABUSED";
+          if(filtertext(msg.text) && this.sanitize) msg.text = "script sending is not allowed.";
           
           //talk
             if(!this.slowed){
