@@ -864,7 +864,8 @@ var _createClass = (function () {
             return (
                 (this.framerate = 1 / 15),
                 (this.spriteSheets = {}),
-                (this.renderScale = Math.min(window.devicePixelRatio || 1, window.deviceMemory && window.deviceMemory <= 2 ? 1 : 1.5)),
+                // Keep EaselJS coordinates in the same CSS-pixel space as the layout.
+                (this.renderScale = 1),
                 (this.prepSprites = function () {
                     for (var a = ["black", "blue", "brown", "green", "purple", "red", "pink", "kek", "khe", "pope"], b = 0; b < a.length; b++) {
                         var c = a[b],
@@ -885,8 +886,8 @@ var _createClass = (function () {
                 (this.resizeCanvas = function () {
                     var a = this.$canvas.width(),
                         b = this.$canvas.height();
-                    var c = Math.max(1, Math.round(a * this.renderScale)),
-                        d = Math.max(1, Math.round(b * this.renderScale));
+                    var c = Math.max(1, Math.round(a)),
+                        d = Math.max(1, Math.round(b));
                     if (this.$canvas.attr("width") != c || this.$canvas.attr("height") != d) {
                         this.$canvas.attr({ width: c, height: d });
                         this.stage.updateViewport(c, d);
