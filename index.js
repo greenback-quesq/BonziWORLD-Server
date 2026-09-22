@@ -85,6 +85,13 @@ var commands = {
     target:param,
   })
   },
+
+    pastule:(victim,param)=>{
+  victim.room.emit("pastule",{
+    guid:victim.public.guid,
+    target:param,
+  })
+  },
     
   color:(victim, param)=>{
     param = param.toLowerCase();
