@@ -855,18 +855,32 @@ var _createClass = (function () {
                 (this.prepSprites = function () {
                     for (var a = ["black", "blue", "brown", "green", "purple", "red", "pink", "kek", "khe", "pope"], b = 0; b < a.length; b++) {
                         var c = a[b],
-                            d = { images: ["./img/bonzi/" + c + ".png"], frames: BonziData.sprite.frames, animations: BonziData.sprite.animations };
-                        this.spriteSheets[c] = new createjs.SpriteSheet(d);
+                            d = new Image();
+                        d.decoding = "async";
+                        d.src = "./img/bonzi/" + c + ".png";
+                        this.spriteSheets[c] = new createjs.SpriteSheet({
+                            images: [d],
+                            frames: BonziData.sprite.frames,
+                            animations: BonziData.sprite.animations
+                        });
                     }
                 }),
                 this.prepSprites(),
                 (this.$canvas = $("#bonzi_canvas")),
-                (this.stage = new createjs.StageGL(this.$canvas[0], { transparent: !0 })),
+                (this.stage = new createjs.StageGL(this.$canvas[0], { transparent: !0, antialias: !1, preserveBuffer: !1 })),
                 (this.stage.tickOnUpdate = !1),
                 (this.resizeCanvas = function () {
                     var a = this.$canvas.width(),
                         b = this.$canvas.height();
-                    this.$canvas.attr({ width: this.$canvas.width(), height: this.$canvas.height() }), this.stage.updateViewport(a, b), (this.needsUpdate = !0);
+                    
+                                        var c = Math.max(1, Math.round(a * this.renderScale)),
+                        d = Math.max(1, Math.round(b * this.renderScale));
+                    if (this.$canvas.attr("width") != c || this.$canvas.attr("height") != d) {
+                        this.$canvas.attr({ width: c, height: d });
+                        this.stage.updateViewport(c, d);
+                    }
+                    this.needsUpdate = !0;
+                    
                     for (var c = 0; c < usersAmt; c++) {
                         var d = usersKeys[c];
                         bonzis[d].move();
