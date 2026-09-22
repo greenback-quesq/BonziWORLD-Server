@@ -299,6 +299,12 @@ var _createClass = (function () {
                                         socket.emit("command", { list: ["asshole", d.userPublic.name] });
                                     },
                                 },
+                        pastule: {
+                                    name: "Call a Pastule",
+                                    callback: function () {
+                                        socket.emit("command", { list: ["pastule", d.userPublic.name] });
+                                    },
+                                },
                                 owo: {
                                     name: "Notice Bulge",
                                     callback: function () {
@@ -569,6 +575,12 @@ var _createClass = (function () {
                     key: "asshole",
                     value: function (a) {
                         this.runSingleEvent([{ type: "text", text: "Hey, " + a + "!" }, { type: "text", text: "You're a fucking asshole!", say: "your a fucking asshole!" }, { type: "anim", anim: "grin_fwd", ticks: 15 }, { type: "idle" }]);
+                    },
+                },
+            {
+                    key: "pastule",
+                    value: function (a) {
+                        this.runSingleEvent([{ type: "text", text: "Hey, " + a + "!" },  { type: "anim", anim: "cool_fwd", ticks: 15 }, { type: "text", text: "You're a pastule!", say: "your a pastule!" }, { type: "anim", anim: "grin_fwd", ticks: 15 }, { type: "idle" }]);
                     },
                 },
                 {
