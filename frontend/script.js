@@ -174,14 +174,6 @@ function sendInput() {
     if (b) return void socket.emit("command", { list: ["youtube", b] });
     if ("/" == a.substring(1, 0)) {
       var c = a.substring(1).split(" ");
-      if (c[0] === "voice") {
-        var voice = (c[1] || "").toLowerCase();
-        if (voice === "espeak" || voice === "speakjs") {
-          window.bonziVoice = voice;
-          if (window.speechSynthesis) window.speechSynthesis.cancel();
-          return;
-        }
-      }
       socket.emit("command", { list: c });
     } else socket.emit("talk", { text: a });
   }
@@ -475,7 +467,7 @@ var _createClass = (function () {
                         this.$dialogCont[c ? "html" : "text"](a)[e ? "addClass" : "removeClass"]("bubble_greentext").css("display", "block"),
                             this.stopSpeaking(),
                             (this.goingToSpeak = !0),
-                            (window.bonziVoice || "speakjs") === "espeak" && window.speechSynthesis
+                            (d.userPublic.voice || "speakjs") === "espeak" && window.speechSynthesis
                                 ? (function () {
                                       var utterance = new SpeechSynthesisUtterance(b);
                                       utterance.rate = Math.max(0.1, (d.userPublic.speed || 175) / 175);
