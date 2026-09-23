@@ -66,24 +66,24 @@ function linkify(a) {
     return a.replace(b, "<a href='$1' target='_blank'>$1</a>");
 }
 function loadBonzis(a) {
-    var manifest = [
-        { id: "bonziBlack", src: "./img/bonzi/black.png", type: createjs.LoadQueue.IMAGE },
-        { id: "bonziBlue", src: "./img/bonzi/blue.png", type: createjs.LoadQueue.IMAGE },
-        { id: "bonziBrown", src: "./img/bonzi/brown.png", type: createjs.LoadQueue.IMAGE },
-        { id: "bonziGreen", src: "./img/bonzi/green.png", type: createjs.LoadQueue.IMAGE },
-        { id: "bonziPurple", src: "./img/bonzi/purple.png", type: createjs.LoadQueue.IMAGE },
-        { id: "bonziRed", src: "./img/bonzi/red.png", type: createjs.LoadQueue.IMAGE },
-        { id: "bonziPink", src: "./img/bonzi/pink.png", type: createjs.LoadQueue.IMAGE },
-        { id: "topjej", src: "./img/misc/topjej.png", type: createjs.LoadQueue.IMAGE }
-    ];
-    loadQueue.on("fileload", function (event) {
-        if (event.item && event.item.id) loadDone.push(event.item.id);
-    }, this);
-    loadQueue.on("error", function (event) {
-        console.warn("Bonzi asset failed to load", event && event.item && event.item.src);
-    }, this);
-    if (a) loadQueue.on("complete", a, this);
-    loadQueue.loadManifest(manifest);
+    loadQueue.loadManifest([
+        { id: "bonziBlack", src: "./img/bonzi/black.png" },
+        { id: "bonziBlue", src: "./img/bonzi/blue.png" },
+        { id: "bonziBrown", src: "./img/bonzi/brown.png" },
+        { id: "bonziGreen", src: "./img/bonzi/green.png" },
+        { id: "bonziPurple", src: "./img/bonzi/purple.png" },
+        { id: "bonziRed", src: "./img/bonzi/red.png" },
+        { id: "bonziPink", src: "./img/bonzi/pink.png" },
+        { id: "topjej", src: "./img/misc/topjej.png" },
+    ]),
+        loadQueue.on(
+            "fileload",
+            function (a) {
+                loadDone.push(a.item.id);
+            },
+            this
+        ),
+        a && loadQueue.on("complete", a, this);
 }
 function loadTest() {
     $("#login_card").hide(),
@@ -118,8 +118,7 @@ function setup() {
             (window.usersPublic[a.guid] = a.userPublic), usersUpdate(), BonziHandler.bonzisCheck();
         }),
         socket.on("talk", function (a) {
-            var b = getBonzi(a.guid);
-            if (!b) return;
+            var b = bonzis[a.guid];
             b.cancel(), b.runSingleEvent([{ type: "text", text: a.text }]);
         }),
         socket.on("joke", function (a) {
@@ -127,8 +126,7 @@ function setup() {
             (b.rng = new Math.seedrandom(a.rng)), b.cancel(), b.joke();
         }),
         socket.on("youtube", function (a) {
-            var b = getBonzi(a.guid);
-            if (!b) return;
+            var b = bonzis[a.guid];
             b.cancel(), b.youtube(a.vid);
         }),
         socket.on("fact", function (a) {
@@ -136,33 +134,27 @@ function setup() {
             (b.rng = new Math.seedrandom(a.rng)), b.cancel(), b.fact();
         }),
         socket.on("backflip", function (a) {
-            var b = getBonzi(a.guid);
-            if (!b) return;
+            var b = bonzis[a.guid];
             b.cancel(), b.backflip(a.swag);
         }),
         socket.on("asshole", function (a) {
-            var b = getBonzi(a.guid);
-            if (!b) return;
+            var b = bonzis[a.guid];
             b.cancel(), b.asshole(a.target);
         }),
-        socket.on("pastule", function (a) {
-            var b = getBonzi(a.guid);
-            if (!b) return;
+                socket.on("pastule", function (a) {
+            var b = bonzis[a.guid];
             b.cancel(), b.pastule(a.target);
         }),
         socket.on("owo", function (a) {
-            var b = getBonzi(a.guid);
-            if (!b) return;
+            var b = bonzis[a.guid];
             b.cancel(), b.owo(a.target);
         }),
         socket.on("triggered", function (a) {
-            var b = getBonzi(a.guid);
-            if (!b) return;
+            var b = bonzis[a.guid];
             b.cancel(), b.runSingleEvent(b.data.event_list_triggered);
         }),
                socket.on("linux", function (a) {
-            var b = getBonzi(a.guid);
-            if (!b) return;
+            var b = bonzis[a.guid];
             b.cancel(), b.runSingleEvent(b.data.event_list_linux);
         }),
 
@@ -177,12 +169,7 @@ function setup() {
         });
 }
 function usersUpdate() {
-  usersKeys = Object.keys(usersPublic);
-  usersAmt = usersKeys.length;
-}
-function getBonzi(guid) {
-  var bonzi = bonzis[guid];
-  return bonzi && bonzi.run ? bonzi : null;
+    (usersKeys = Object.keys(usersPublic)), (usersAmt = usersKeys.length);
 }
 function sendInput() {
   var a = $("#chat_message").val();
@@ -878,8 +865,9 @@ var _createClass = (function () {
                 (this.prepSprites = function () {
                     for (var a = ["black", "blue", "brown", "green", "purple", "red", "pink", "kek", "khe", "pope"], b = 0; b < a.length; b++) {
                         var c = a[b],
-                            d = loadQueue.getResult(c === "pope" ? "topjej" : "bonzi" + c.charAt(0).toUpperCase() + c.slice(1));
-                        if (!d) continue;
+                            d = new Image();
+                        d.decoding = "async";
+                        d.src = "./img/bonzi/" + c + ".png";
                         this.spriteSheets[c] = new createjs.SpriteSheet({
                             images: [d],
                             frames: BonziData.sprite.frames,
@@ -887,6 +875,7 @@ var _createClass = (function () {
                         });
                     }
                 }),
+                this.prepSprites(),
                 (this.$canvas = $("#bonzi_canvas")),
                 (this.stage = new createjs.StageGL(this.$canvas[0], { transparent: !0, antialias: !1, preserveBuffer: !1 })),
                 (this.stage.tickOnUpdate = !1),
@@ -896,13 +885,13 @@ var _createClass = (function () {
                     var c = Math.max(1, Math.round(a)),
                         d = Math.max(1, Math.round(b));
                     if (this.$canvas.attr("width") != c || this.$canvas.attr("height") != d) {
-                         this.$canvas.attr({ width: c, height: d });
+                        this.$canvas.attr({ width: c, height: d });
                         this.stage.updateViewport(c, d);
                     }
                     this.needsUpdate = !0;
-                    for (var e = 0; e < usersKeys.length; e++) {
-                        var f = getBonzi(usersKeys[e]);
-                        if (f) f.move();
+                    for (var c = 0; c < usersAmt; c++) {
+                        var d = usersKeys[c];
+                        bonzis[d].move();
                     }
                 }),
                 this.resizeCanvas(),
@@ -918,9 +907,9 @@ var _createClass = (function () {
                 )),
                 (this.intervalTick = setInterval(
                     function () {
-                        for (var a = 0; a < usersKeys.length; a++) {
-                            var b = getBonzi(usersKeys[a]);
-                            if (b) b.update();
+                        for (var a = 0; a < usersAmt; a++) {
+                            var b = usersKeys[a];
+                            bonzis[b].update();
                         }
                         this.stage.tick();
                     }.bind(this),
@@ -934,16 +923,20 @@ var _createClass = (function () {
                 )),
                 $(window).resize(this.resize.bind(this)),
                 (this.bonzisCheck = function () {
-                    for (var a = 0; a < usersKeys.length; a++) {
-                        var b = getBonzi(usersKeys[a]);
-                        if (b) b.move();
+                    for (var a = 0; a < usersAmt; a++) {
+                        var b = usersKeys[a];
+                        if (b in bonzis) {
+                            var c = bonzis[b];
+                            (c.userPublic = usersPublic[b]), c.updateName();
+                            var d = usersPublic[b].color;
+                            c.color != d && ((c.color = d), c.updateSprite());
+                        } else bonzis[b] = new Bonzi(b, usersPublic[b]);
                     }
                 }),
                 $("#btn_tile").click(function () {
                     for (var a = $(window).width(), b = $(window).height(), c = 0, d = 80, e = 0, f = 0, g = 0; g < usersAmt; g++) {
-                        var h = usersKeys[g],
-                            i = getBonzi(h);
-                        i && (i.move(e, f), (e += 200), e + 100 > a && ((e = 0), (f += 160), f + 160 > b && ((c += d), (d /= 2), (f = c))));
+                        var h = usersKeys[g];
+                        bonzis[h].move(e, f), (e += 200), e + 100 > a && ((e = 0), (f += 160), f + 160 > b && ((c += d), (d /= 2), (f = c)));
                     }
                 }),
                 this
@@ -964,12 +957,9 @@ var _createClass = (function () {
 var loadQueue = new createjs.LoadQueue(),
     loadDone = [],
     loadNeeded = ["bonziBlack", "bonziBlue", "bonziBrown", "bonziGreen", "bonziPurple", "bonziRed", "bonziPink", "topjej"];
-  $(window).load(function () {
-  $("#login_card").show(), $("#login_load").hide(), loadBonzis(function () {
-  BonziHandler.prepSprites();
-  BonziHandler.resizeCanvas();
-  });
-  });
+$(window).load(function () {
+    $("#login_card").show(), $("#login_load").hide(), loadBonzis();
+});
 var undefined,
     socket = io("https://bonziworld-hand.onrender.com", {
   transports: ["polling"],
