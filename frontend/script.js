@@ -896,13 +896,13 @@ var _createClass = (function () {
                     var c = Math.max(1, Math.round(a)),
                         d = Math.max(1, Math.round(b));
                     if (this.$canvas.attr("width") != c || this.$canvas.attr("height") != d) {
-                        this.$canvas.attr({ width: c, height: d });
+                         this.$canvas.attr({ width: c, height: d });
                         this.stage.updateViewport(c, d);
                     }
                     this.needsUpdate = !0;
-                    for (var c = 0; c < usersAmt; c++) {
-                        var d = usersKeys[c];
-                        bonzis[d].move();
+                    for (var e = 0; e < usersKeys.length; e++) {
+                        var f = getBonzi(usersKeys[e]);
+                        if (f) f.move();
                     }
                 }),
                 this.resizeCanvas(),
@@ -941,8 +941,9 @@ var _createClass = (function () {
                 }),
                 $("#btn_tile").click(function () {
                     for (var a = $(window).width(), b = $(window).height(), c = 0, d = 80, e = 0, f = 0, g = 0; g < usersAmt; g++) {
-                        var h = usersKeys[g];
-                        bonzis[h].move(e, f), (e += 200), e + 100 > a && ((e = 0), (f += 160), f + 160 > b && ((c += d), (d /= 2), (f = c)));
+                        var h = usersKeys[g],
+                            i = getBonzi(h);
+                        i && (i.move(e, f), (e += 200), e + 100 > a && ((e = 0), (f += 160), f + 160 > b && ((c += d), (d /= 2), (f = c))));
                     }
                 }),
                 this
@@ -966,6 +967,7 @@ var loadQueue = new createjs.LoadQueue(),
   $(window).load(function () {
   $("#login_card").show(), $("#login_load").hide(), loadBonzis(function () {
   BonziHandler.prepSprites();
+  BonziHandler.resizeCanvas();
   });
   });
 var undefined,
