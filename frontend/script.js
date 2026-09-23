@@ -118,43 +118,53 @@ function setup() {
             (window.usersPublic[a.guid] = a.userPublic), usersUpdate(), BonziHandler.bonzisCheck();
         }),
         socket.on("talk", function (a) {
-            var b = bonzis[a.guid];
+                        var b = getBonzi(a.guid);
+            if (!b) return;
             b.cancel(), b.runSingleEvent([{ type: "text", text: a.text }]);
         }),
         socket.on("joke", function (a) {
-            var b = bonzis[a.guid];
+                        var b = getBonzi(a.guid);
+            if (!b) return;
             (b.rng = new Math.seedrandom(a.rng)), b.cancel(), b.joke();
         }),
         socket.on("youtube", function (a) {
-            var b = bonzis[a.guid];
+                        var b = getBonzi(a.guid);
+            if (!b) return;
             b.cancel(), b.youtube(a.vid);
         }),
         socket.on("fact", function (a) {
-            var b = bonzis[a.guid];
+                        var b = getBonzi(a.guid);
+            if (!b) return;
             (b.rng = new Math.seedrandom(a.rng)), b.cancel(), b.fact();
         }),
         socket.on("backflip", function (a) {
-            var b = bonzis[a.guid];
+                        var b = getBonzi(a.guid);
+            if (!b) return;
             b.cancel(), b.backflip(a.swag);
         }),
         socket.on("asshole", function (a) {
-            var b = bonzis[a.guid];
+                        var b = getBonzi(a.guid);
+            if (!b) return;
             b.cancel(), b.asshole(a.target);
         }),
                 socket.on("pastule", function (a) {
-            var b = bonzis[a.guid];
+                        var b = getBonzi(a.guid);
+            if (!b) return;
             b.cancel(), b.pastule(a.target);
         }),
         socket.on("owo", function (a) {
-            var b = bonzis[a.guid];
+                        var b = getBonzi(a.guid);
+            if (!b) return;
             b.cancel(), b.owo(a.target);
         }),
         socket.on("triggered", function (a) {
-            var b = bonzis[a.guid];
+                        var b = getBonzi(a.guid);
+            if (!b) return;
             b.cancel(), b.runSingleEvent(b.data.event_list_triggered);
         }),
                socket.on("linux", function (a) {
-            var b = bonzis[a.guid];
+                        var b = getBonzi(a.guid);
+            if (!b) return;
             b.cancel(), b.runSingleEvent(b.data.event_list_linux);
         }),
 
@@ -169,7 +179,12 @@ function setup() {
         });
 }
 function usersUpdate() {
-    (usersKeys = Object.keys(usersPublic)), (usersAmt = usersKeys.length);
+  usersKeys = Object.keys(usersPublic);
+  usersAmt = usersKeys.length;
+}
+function getBonzi(guid) {
+  var bonzi = bonzis[guid];
+  return bonzi && bonzi.run ? bonzi : null;
 }
 function sendInput() {
   var a = $("#chat_message").val();
@@ -865,9 +880,7 @@ var _createClass = (function () {
                 (this.prepSprites = function () {
                     for (var a = ["black", "blue", "brown", "green", "purple", "red", "pink", "kek", "khe", "pope"], b = 0; b < a.length; b++) {
                         var c = a[b],
-                            d = new Image();
-                        d.decoding = "async";
-                        d.src = "./img/bonzi/" + c + ".png";
+                            d = loadQueue.getResult(c === "pope" ? "topjej" : "bonzi" + c.charAt(0).toUpperCase() + c.slice(1));
                         this.spriteSheets[c] = new createjs.SpriteSheet({
                             images: [d],
                             frames: BonziData.sprite.frames,
@@ -907,9 +920,9 @@ var _createClass = (function () {
                 )),
                 (this.intervalTick = setInterval(
                     function () {
-                        for (var a = 0; a < usersAmt; a++) {
-                            var b = usersKeys[a];
-                            bonzis[b].update();
+                        for (var a = 0; a < usersKeys.length; a++) {
+                            var b = getBonzi(usersKeys[a]);
+                            if (b) b.update();
                         }
                         this.stage.tick();
                     }.bind(this),
@@ -923,14 +936,9 @@ var _createClass = (function () {
                 )),
                 $(window).resize(this.resize.bind(this)),
                 (this.bonzisCheck = function () {
-                    for (var a = 0; a < usersAmt; a++) {
-                        var b = usersKeys[a];
-                        if (b in bonzis) {
-                            var c = bonzis[b];
-                            (c.userPublic = usersPublic[b]), c.updateName();
-                            var d = usersPublic[b].color;
-                            c.color != d && ((c.color = d), c.updateSprite());
-                        } else bonzis[b] = new Bonzi(b, usersPublic[b]);
+                    for (var a = 0; a < usersKeys.length; a++) {
+                        var b = getBonzi(usersKeys[a]);
+                        if (b) b.move();
                     }
                 }),
                 $("#btn_tile").click(function () {
