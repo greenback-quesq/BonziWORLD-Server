@@ -216,7 +216,7 @@ input[type="text"] {
 
 body.vaporwave #content {
   background-color: #008080;
-  background-image: url("../img/desktop.vaporwave/logo.png"), url("../img/desktop.vaporwave/bg.png");
+  background-image: url("../img/desktop.vaporwave/logo.png"), url("../img/desktop.vaporwave/");
   background-position: top left, center;
   background-repeat: no-repeat; }
 body.vaporwave #chat_bar {
@@ -260,8 +260,8 @@ body.vaporwave #chat_send {
     background-position: 0 -56px; }
 
 #content {
-  background-color: #6d33a0;
-  background-image: url("../img/desktop/logo.png"), url("../img/desktop/bg.png");
+  background-color: #BB5D0F;
+  background-image: url("../img/desktop/logo.png"), url("../img/desktop/bg-new-2.png");
   background-position: top left, center;
   background-repeat: no-repeat; }
 
