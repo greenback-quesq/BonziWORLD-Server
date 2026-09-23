@@ -879,6 +879,7 @@ var _createClass = (function () {
                     for (var a = ["black", "blue", "brown", "green", "purple", "red", "pink", "kek", "khe", "pope"], b = 0; b < a.length; b++) {
                         var c = a[b],
                             d = loadQueue.getResult(c === "pope" ? "topjej" : "bonzi" + c.charAt(0).toUpperCase() + c.slice(1));
+                        if (!d) continue;
                         this.spriteSheets[c] = new createjs.SpriteSheet({
                             images: [d],
                             frames: BonziData.sprite.frames,
@@ -886,7 +887,6 @@ var _createClass = (function () {
                         });
                     }
                 }),
-                this.prepSprites(),
                 (this.$canvas = $("#bonzi_canvas")),
                 (this.stage = new createjs.StageGL(this.$canvas[0], { transparent: !0, antialias: !1, preserveBuffer: !1 })),
                 (this.stage.tickOnUpdate = !1),
@@ -963,9 +963,11 @@ var _createClass = (function () {
 var loadQueue = new createjs.LoadQueue(),
     loadDone = [],
     loadNeeded = ["bonziBlack", "bonziBlue", "bonziBrown", "bonziGreen", "bonziPurple", "bonziRed", "bonziPink", "topjej"];
-$(window).load(function () {
-    $("#login_card").show(), $("#login_load").hide(), loadBonzis();
-});
+  $(window).load(function () {
+  $("#login_card").show(), $("#login_load").hide(), loadBonzis(function () {
+  BonziHandler.prepSprites();
+  });
+  });
 var undefined,
     socket = io("https://bonziworld-hand.onrender.com", {
   transports: ["polling"],
