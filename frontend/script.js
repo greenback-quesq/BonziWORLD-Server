@@ -118,52 +118,50 @@ function setup() {
             (window.usersPublic[a.guid] = a.userPublic), usersUpdate(), BonziHandler.bonzisCheck();
         }),
         socket.on("talk", function (a) {
-                        var b = getBonzi(a.guid);
+            var b = getBonzi(a.guid);
             if (!b) return;
             b.cancel(), b.runSingleEvent([{ type: "text", text: a.text }]);
         }),
         socket.on("joke", function (a) {
-                        var b = getBonzi(a.guid);
-            if (!b) return;
+            var b = bonzis[a.guid];
             (b.rng = new Math.seedrandom(a.rng)), b.cancel(), b.joke();
         }),
         socket.on("youtube", function (a) {
-                        var b = getBonzi(a.guid);
+            var b = getBonzi(a.guid);
             if (!b) return;
             b.cancel(), b.youtube(a.vid);
         }),
         socket.on("fact", function (a) {
-                        var b = getBonzi(a.guid);
-            if (!b) return;
+            var b = bonzis[a.guid];
             (b.rng = new Math.seedrandom(a.rng)), b.cancel(), b.fact();
         }),
         socket.on("backflip", function (a) {
-                        var b = getBonzi(a.guid);
+            var b = getBonzi(a.guid);
             if (!b) return;
             b.cancel(), b.backflip(a.swag);
         }),
         socket.on("asshole", function (a) {
-                        var b = getBonzi(a.guid);
+            var b = getBonzi(a.guid);
             if (!b) return;
             b.cancel(), b.asshole(a.target);
         }),
-                socket.on("pastule", function (a) {
-                        var b = getBonzi(a.guid);
+        socket.on("pastule", function (a) {
+            var b = getBonzi(a.guid);
             if (!b) return;
             b.cancel(), b.pastule(a.target);
         }),
         socket.on("owo", function (a) {
-                        var b = getBonzi(a.guid);
+            var b = getBonzi(a.guid);
             if (!b) return;
             b.cancel(), b.owo(a.target);
         }),
         socket.on("triggered", function (a) {
-                        var b = getBonzi(a.guid);
+            var b = getBonzi(a.guid);
             if (!b) return;
             b.cancel(), b.runSingleEvent(b.data.event_list_triggered);
         }),
                socket.on("linux", function (a) {
-                        var b = getBonzi(a.guid);
+            var b = getBonzi(a.guid);
             if (!b) return;
             b.cancel(), b.runSingleEvent(b.data.event_list_linux);
         }),
