@@ -67,6 +67,7 @@ function linkify(a) {
 }
 function loadBonzis(a) {
     loadQueue.loadManifest([
+        { id: "topjej", src: "./img/misc/topjej.png" },
     ]),
         loadQueue.on(
             "fileload",
