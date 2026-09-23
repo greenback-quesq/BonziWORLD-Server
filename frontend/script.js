@@ -66,24 +66,24 @@ function linkify(a) {
     return a.replace(b, "<a href='$1' target='_blank'>$1</a>");
 }
 function loadBonzis(a) {
-    loadQueue.loadManifest([
-        { id: "bonziBlack", src: "./img/bonzi/black.png" },
-        { id: "bonziBlue", src: "./img/bonzi/blue.png" },
-        { id: "bonziBrown", src: "./img/bonzi/brown.png" },
-        { id: "bonziGreen", src: "./img/bonzi/green.png" },
-        { id: "bonziPurple", src: "./img/bonzi/purple.png" },
-        { id: "bonziRed", src: "./img/bonzi/red.png" },
-        { id: "bonziPink", src: "./img/bonzi/pink.png" },
-        { id: "topjej", src: "./img/misc/topjej.png" },
-    ]),
-        loadQueue.on(
-            "fileload",
-            function (a) {
-                loadDone.push(a.item.id);
-            },
-            this
-        ),
-        a && loadQueue.on("complete", a, this);
+    var manifest = [
+        { id: "bonziBlack", src: "./img/bonzi/black.png", type: createjs.LoadQueue.IMAGE },
+        { id: "bonziBlue", src: "./img/bonzi/blue.png", type: createjs.LoadQueue.IMAGE },
+        { id: "bonziBrown", src: "./img/bonzi/brown.png", type: createjs.LoadQueue.IMAGE },
+        { id: "bonziGreen", src: "./img/bonzi/green.png", type: createjs.LoadQueue.IMAGE },
+        { id: "bonziPurple", src: "./img/bonzi/purple.png", type: createjs.LoadQueue.IMAGE },
+        { id: "bonziRed", src: "./img/bonzi/red.png", type: createjs.LoadQueue.IMAGE },
+        { id: "bonziPink", src: "./img/bonzi/pink.png", type: createjs.LoadQueue.IMAGE },
+        { id: "topjej", src: "./img/misc/topjej.png", type: createjs.LoadQueue.IMAGE }
+    ];
+    loadQueue.on("fileload", function (event) {
+        if (event.item && event.item.id) loadDone.push(event.item.id);
+    }, this);
+    loadQueue.on("error", function (event) {
+        console.warn("Bonzi asset failed to load", event && event.item && event.item.src);
+    }, this);
+    if (a) loadQueue.on("complete", a, this);
+    loadQueue.loadManifest(manifest);
 }
 function loadTest() {
     $("#login_card").hide(),
